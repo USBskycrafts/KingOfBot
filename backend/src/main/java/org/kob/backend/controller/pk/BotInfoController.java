@@ -1,0 +1,15 @@
+package org.kob.backend.controller.pk;
+
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/pk")
+public class BotInfoController {
+
+    @RequestMapping("bot-info")
+    String getBotInfo() {
+        return "HelloWorld";
+    }
+}
