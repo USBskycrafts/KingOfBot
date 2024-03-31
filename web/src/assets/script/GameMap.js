@@ -1,5 +1,6 @@
 import { Barrier } from "./Barrier";
 import { GameObject } from "./GameObject";
+import { Snake } from "./Snake";
 
 
 export class GameMap extends GameObject {
@@ -9,7 +10,7 @@ export class GameMap extends GameObject {
         this.parent = parent;
         this.L = 0;
         this.rows = 13;
-        this.cols = 13;
+        this.cols = 14;
 
         this.barriers = [];
         this.BARRIER_NR = parseInt(this.rows * this.cols / 5);
@@ -17,7 +18,26 @@ export class GameMap extends GameObject {
 
     start() {
         super.start();
-        this.create_barriers();
+        this.create_barriers(); 
+        this.create_snakes();
+        this.binding_key_listening();
+    }
+
+    create_snakes() {
+        this.snakes = [
+            new Snake({
+                id: 0, 
+                color: '#4876EC',
+                r: this.rows - 2,
+                c: 1},
+                this),
+            new Snake({
+                id: 1,
+                color: '#F94848',
+                r: 1,
+                c: this.cols - 2
+            }, this)
+        ];
     }
 
 
@@ -42,13 +62,15 @@ export class GameMap extends GameObject {
                 for (let j = 0; j < 1000; j++) {
                     let r = parseInt(Math.random() * this.rows);
                     let c = parseInt(Math.random() * this.cols);
-                    if (g[r][c]) 
+                    let r_prime = this.rows - 1 - r;
+                    let c_prime = this.cols - 1 - c;
+                    if (g[r][c] || g[r_prime][c_prime]) 
                         continue; 
                     if (r == this.rows - 2 && c == 1)
                         continue;
                     if (c == 1 && c == this.cols - 2)
                         continue;
-                    g[r][c] = g[c][r] = true;
+                    g[r][c] = g[r_prime][c_prime] = true;
                     break;
                 }
             }
@@ -59,7 +81,6 @@ export class GameMap extends GameObject {
             if (x == 1 && y == this.cols - 2)
                 return true; 
             g[x][y] = true;
-            console.log(g);
             let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
             for (let i = 0; i < 4; i++) {
                 let u = x + dx[i], v = y + dy[i];
@@ -81,11 +102,11 @@ export class GameMap extends GameObject {
             g_copied = JSON.parse(JSON.stringify(g));
         }
 
-        /// 创建barrier
+        /// 创建barrier 
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
-                if (g[i][j])
-                    new Barrier(i, j, this);
+                if (g[i][j]) 
+                    this.barriers.push(new Barrier(i, j, this));
             }
         }
     }
@@ -93,6 +114,9 @@ export class GameMap extends GameObject {
     update() {
         super.update();
         this.update_size();
+        if (this.check_ready()) {
+            this.next_step(); 
+        }
         this.render();
     }
 
@@ -119,5 +143,80 @@ export class GameMap extends GameObject {
                 context.fillRect(i * this.L, j * this.L, this.L, this.L);
             }
         }
+    }
+
+    /// 判断两条蛇是否准备好移动
+    check_ready() {
+        for (const snake of this.snakes) { 
+            if (snake.status !== 'idle')
+                return false;
+            if (snake.direction === -1)
+                return false;
+        }
+        return true; 
+    }
+
+    /// conflict detection
+    check_valid(cell) {
+        for (let barrier of this.barriers) {
+            if (cell.r === barrier.row && cell.c === barrier.col) 
+                return false;
+        }
+        for (const snake of this.snakes) {
+            let k = snake.cells.length;
+            if (!snake.check_if_increasing()) {
+                k--;
+            }
+            const cells = snake.cells;
+            for (let i = 0; i < k; i++) {
+                if (cells[i].r === cell.r && cells[i].c === cell.c)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    /// 让两条蛇进入下一回合
+    next_step() {
+        for (const snake of this.snakes) {
+            snake.next_step();
+        }
+    }
+
+    /// 绑定键盘监听事件
+    binding_key_listening() {
+        let canvas = this.context.canvas;
+        canvas.focus();
+        canvas.addEventListener('keydown', e => {
+            const [snake0, snake1] = this.snakes;
+            switch(e.key) {
+            case 'w':
+                snake0.set_direction(0);
+                break;
+            case 'ArrowUp':
+                snake1.set_direction(0);
+                break;
+            case 'a':
+                snake0.set_direction(1);
+                break;
+            case 'ArrowLeft':
+                snake1.set_direction(1);
+                break;
+            case 's':
+                snake0.set_direction(2);
+                break;
+            case 'ArrowDown':
+                snake1.set_direction(2);
+                break;
+            case 'd':
+                snake0.set_direction(3); 
+                break;
+            case 'ArrowRight':
+                snake1.set_direction(3);
+                break;
+            default:
+                throw("no such direction");
+            }
+        });
     }
 }
