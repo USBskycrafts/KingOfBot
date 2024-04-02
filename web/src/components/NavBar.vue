@@ -34,7 +34,7 @@
                         </ul>
                     </li>
                 </ul>
-                <ul class="navbar-nav" v-else>
+                <ul class="navbar-nav" v-else-if="!$store.state.user.isFetching">
                     <router-link class="nav-link" :to="{ name: 'user-account-login' }" role="button">
                         login
                     </router-link>
@@ -66,7 +66,7 @@ export default {
 
         return {
             route_name,
-            logout
+            logout,
         };
     }
 }

@@ -6,7 +6,9 @@ export default {
         username: "",
         avator: "",
         token: "",
-        isLogin: ""
+        isLogin: false,
+        // if now fetching from backend
+        isFetching: true,
     },
     getters: {
 
@@ -27,6 +29,9 @@ export default {
             state.avator = "";
             state.token = "";
             state.isLogin = false;
+        },
+        updateFetching(state, isFetching) {
+            state.isFetching = isFetching;
         }
     },
     actions: {
@@ -38,16 +43,17 @@ export default {
                     username: data.username,
                     password: data.password
                 },
-                success: (resp) => {
+                success(resp) {
                     if (resp['error-message'] === 'success') {
                         context.commit("updateToken", resp.token);
+                        localStorage.setItem("user-token", resp.token);
                         data.success(resp);
                     } else {
                         data.error(resp);
                     }
                 },
-                error: (resp) => {
-                    console.log(resp)
+                error(resp) {
+                    data.error(resp);
                 }
             });
         },
@@ -68,14 +74,14 @@ export default {
                     } else {
                         data.error(resp);
                     }
-                    console.log(resp)
                 },
                 error(resp) {
-                    console.log(resp)
+                    data.error(resp);
                 }
             });
         },
         logout(context) {
+            localStorage.removeItem('user-token');
             context.commit("logout");
         }
     },

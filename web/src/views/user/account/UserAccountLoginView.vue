@@ -1,5 +1,5 @@
 <template>
-    <ContenField>
+    <ContenField v-if="!$store.state.user.isFetching">
         <div class="row justify-content-md-center">
             <div class="col-3">
                 <form @submit.prevent="login">
@@ -35,6 +35,23 @@ export default {
         let password = ref('');
         let errorMessage = ref('');
 
+        const token = localStorage.getItem('user-token');
+        if (token) {
+            store.commit('updateToken', token);
+            store.dispatch('getInfo', {
+                success() {
+                    router.push({ name: 'home' });
+                    store.commit("updateFetching", false);
+                },
+                error() {
+                    localStorage.removeItem('user-token');
+                    store.commit("updateFetching", false);
+                }
+            })
+        } else {
+            store.commit("updateFetching", false);
+        }
+
         const login = () => {
             errorMessage.value = "";
             store.dispatch("login", {
@@ -56,7 +73,7 @@ export default {
             username,
             password,
             errorMessage,
-            login,
+            login
         }
     },
     components: {
