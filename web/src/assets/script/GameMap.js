@@ -215,7 +215,6 @@ export class GameMap extends GameObject {
                 snake1.set_direction(3);
                 break;
             default:
-                throw("no such direction");
             }
         });
     }

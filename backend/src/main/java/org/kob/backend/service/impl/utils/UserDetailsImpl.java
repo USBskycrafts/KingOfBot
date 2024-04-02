@@ -1,4 +1,4 @@
-package org.kob.backend.service.utils;
+package org.kob.backend.service.impl.utils;
 
 
 import lombok.AllArgsConstructor;
@@ -44,7 +44,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override

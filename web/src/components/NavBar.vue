@@ -17,11 +17,11 @@
                             :to="{ name: 'record-index' }">Record</router-link>
                     </li>
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav" v-if="$store.state.user.isLogin">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
-                            User Template
+                            {{ $store.state.user.username }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><router-link :class="route_name == 'user-bot-index' ? 'nav-link active' : 'nav-link'"
@@ -30,9 +30,17 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#">Exit else here</a></li>
+                            <li><a class="dropdown-item" href="#" @click="logout">Exit else here</a></li>
                         </ul>
                     </li>
+                </ul>
+                <ul class="navbar-nav" v-else>
+                    <router-link class="nav-link" :to="{ name: 'user-account-login' }" role="button">
+                        login
+                    </router-link>
+                    <router-link class="nav-link" :to="{ name: 'user-account-register' }" role="button">
+                        register
+                    </router-link>
                 </ul>
             </div>
         </div>
@@ -44,13 +52,21 @@
 <script>
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
+import { useStore } from 'vuex';
 
 export default {
     setup() {
         const route = useRoute();
+        const store = useStore();
         let route_name = computed(() => route.name);
+
+        const logout = () => {
+            store.dispatch("logout");
+        }
+
         return {
-            route_name
+            route_name,
+            logout
         };
     }
 }

@@ -3,7 +3,7 @@ package org.kob.backend.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.kob.backend.mapper.UserMapper;
 import org.kob.backend.pojo.User;
-import org.kob.backend.service.utils.UserDetailsImpl;
+import org.kob.backend.service.impl.utils.UserDetailsImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
