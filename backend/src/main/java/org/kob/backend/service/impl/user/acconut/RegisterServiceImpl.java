@@ -1,4 +1,4 @@
-package org.kob.backend.service.impl.acconut;
+package org.kob.backend.service.impl.user.acconut;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.kob.backend.mapper.UserMapper;
