@@ -84,6 +84,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.requestAuthrization && !store.state.user.isLogin) {
+    store.state.user.lastPage.name = to.name;
     next({name: "user-account-login"});
   } else {
     next();

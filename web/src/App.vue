@@ -6,11 +6,13 @@
 
 <script>
 import NavBar from "@/components/NavBar.vue"
+import "jquery/dist/jquery"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap/dist/js/bootstrap"
 
 export default {
   setup() {
+
   },
   components: {
     NavBar
@@ -18,4 +20,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+h1+p::first-letter {
+  font-size: 300px;
+}
+</style>

@@ -40,7 +40,7 @@ export default {
             store.commit('updateToken', token);
             store.dispatch('getInfo', {
                 success() {
-                    router.push({ name: 'home' });
+                    router.push(store.state.user.lastPage);
                     store.commit("updateFetching", false);
                 },
                 error() {
@@ -60,7 +60,7 @@ export default {
                 success() {
                     store.dispatch("getInfo", {
                         success() {
-                            router.push({ name: 'home' });
+                            router.push(store.state.user.lastPage);
                         },
                     })
                 },

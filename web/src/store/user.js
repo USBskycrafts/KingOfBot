@@ -4,11 +4,12 @@ export default {
     state: {
         id: "",
         username: "",
-        avator: "",
+        avatar: "",
         token: "",
         isLogin: false,
         // if now fetching from backend
         isFetching: true,
+        lastPage: {name: "home"}
     },
     getters: {
 
@@ -17,7 +18,7 @@ export default {
         updateUser(state, user) {
             state.id = user.id;
             state.username = user.username;
-            state.avator = user.avator;
+            state.avatar = user.avatar;
             state.isLogin = user.isLogin;
         },
         updateToken(state, token) {
@@ -32,6 +33,9 @@ export default {
         },
         updateFetching(state, isFetching) {
             state.isFetching = isFetching;
+        },
+        updateLastPage(state, lastPage) {
+            state.lastPage = lastPage;
         }
     },
     actions: {
@@ -69,7 +73,7 @@ export default {
                         context.commit("updateUser", {
                             ...resp,
                             isLogin: true
-                        })
+                        });
                         data.success(resp);
                     } else {
                         data.error(resp);

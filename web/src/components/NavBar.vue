@@ -18,28 +18,24 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav" v-if="$store.state.user.isLogin">
-                    <li class="nav-item dropdown">
+                    <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             {{ $store.state.user.username }}
                         </a>
                         <ul class="dropdown-menu">
                             <li><router-link :class="route_name == 'user-bot-index' ? 'nav-link active' : 'nav-link'"
-                                    :to="{ name: 'user-bot-index' }">My
-                                    bots</router-link></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#" @click="logout">Exit else here</a></li>
+                                    :to="{ name: 'user-bot-index' }">My bots</router-link></li>
+                            <li><a class="dropdown-item" href="#" @click="logout">Logout</a></li>
                         </ul>
-                    </li>
+                    </div>
                 </ul>
                 <ul class="navbar-nav" v-else-if="!$store.state.user.isFetching">
                     <router-link class="nav-link" :to="{ name: 'user-account-login' }" role="button">
-                        login
+                        Login
                     </router-link>
                     <router-link class="nav-link" :to="{ name: 'user-account-register' }" role="button">
-                        register
+                        Register
                     </router-link>
                 </ul>
             </div>
@@ -53,6 +49,7 @@
 import { useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { useStore } from 'vuex';
+import "bootstrap/dist/js/bootstrap.bundle"
 
 export default {
     setup() {
