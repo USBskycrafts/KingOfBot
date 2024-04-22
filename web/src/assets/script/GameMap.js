@@ -4,13 +4,14 @@ import { Snake } from "./Snake";
 
 
 export class GameMap extends GameObject {
-    constructor(context, parent) {
+    constructor(context, parent, store) {
         super();
         this.context = context;
         this.parent = parent;
         this.L = 0;
         this.rows = 13;
         this.cols = 14;
+        this.store = store;
 
         this.barriers = [];
         this.BARRIER_NR = parseInt(this.rows * this.cols / 5);
@@ -43,65 +44,7 @@ export class GameMap extends GameObject {
 
     /// 保证连通性， 保证轴对称
     create_barriers() {
-        
-        let create_bitmap = () => {
-            let g = Array(this.rows).fill().map(() => Array(this.cols).fill(false));
-        
-            /// 四周加上障碍
-            for (let i = 0; i < this.rows; i++) {
-                for (let j = 0; j < this.cols; j++) {
-                    if (i == 0 || i == this.rows - 1
-                        || j == 0 || j == this.cols - 1)
-                        g[i][j] = true;
-                }
-            }
-
-
-            /// 随机障碍
-            for (let i = 0; i < this.BARRIER_NR / 2; i++) {
-                for (let j = 0; j < 1000; j++) {
-                    let r = parseInt(Math.random() * this.rows);
-                    let c = parseInt(Math.random() * this.cols);
-                    let r_prime = this.rows - 1 - r;
-                    let c_prime = this.cols - 1 - c;
-                    if (g[r][c] || g[r_prime][c_prime]) 
-                        continue; 
-                    if (r == this.rows - 2 && c == 1)
-                        continue;
-                    if (c == 1 && c == this.cols - 2)
-                        continue;
-                    g[r][c] = g[r_prime][c_prime] = true;
-                    break;
-                }
-            }
-            return g;
-        }
-
-        let is_connective = (g, x, y) => {
-            if (x == 1 && y == this.cols - 2)
-                return true; 
-            g[x][y] = true;
-            let dx = [-1, 0, 1, 0], dy = [0, 1, 0, -1];
-            for (let i = 0; i < 4; i++) {
-                let u = x + dx[i], v = y + dy[i];
-                if (u < 1 || u >= this.rows - 1)
-                    continue;
-                if (v < 1 || v >= this.cols - 1)
-                    continue;
-                if (!g[u][v] && is_connective(g, u, v)) 
-                    return true;
-
-            } 
-            return false;
-        }
-
-        let g = create_bitmap();
-        let g_copied = JSON.parse(JSON.stringify(g));
-        while (!is_connective(g_copied, this.rows - 2, 1)) {
-            g = create_bitmap();
-            g_copied = JSON.parse(JSON.stringify(g));
-        }
-
+        const g = this.store.state.pk.map;
         /// 创建barrier 
         for (let i = 0; i < this.rows; i++) {
             for (let j = 0; j < this.cols; j++) {
@@ -188,33 +131,28 @@ export class GameMap extends GameObject {
         let canvas = this.context.canvas;
         canvas.focus();
         canvas.addEventListener('keydown', e => {
-            const [snake0, snake1] = this.snakes;
+            // const [snake0, snake1] = this.snakes;
+            let d = -1;
             switch(e.key) {
             case 'w':
-                snake0.set_direction(0);
-                break;
-            case 'ArrowUp':
-                snake1.set_direction(0);
+                d = 0
                 break;
             case 'a':
-                snake0.set_direction(1);
-                break;
-            case 'ArrowLeft':
-                snake1.set_direction(1);
+                d = 1;
                 break;
             case 's':
-                snake0.set_direction(2);
-                break;
-            case 'ArrowDown':
-                snake1.set_direction(2);
+                d = 2;
                 break;
             case 'd':
-                snake0.set_direction(3); 
-                break;
-            case 'ArrowRight':
-                snake1.set_direction(3);
+                d = 3;
                 break;
             default:
+            }
+            if (d >= 0) {
+                this.store.state.pk.socket.send(JSON.stringify({
+                    event: "move",
+                    direction: d
+                }));
             }
         });
     }

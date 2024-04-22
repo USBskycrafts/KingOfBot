@@ -15,5 +15,7 @@
 <style scoped>
 .content-field {
     margin-top: 20px;
+    width: 70vw;
+    height: 70vh;
 }
 </style>
